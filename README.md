@@ -42,14 +42,14 @@ This project will be built out over 3 different classes:
 
 ## Deployment <a name = "deployment"></a>
 
-Check here how to depoly an app on Heroku https://github.com/HackYourFuture-CPH/node.js/blob/main/deployment.md and watch this video https://www.youtube.com/watch?v=A9ZcSOc7hCw
+Check here how to deploy an app on Heroku https://github.com/HackYourFuture-CPH/node.js/blob/main/deployment.md and watch this video https://www.youtube.com/watch?v=A9ZcSOc7hCw
 
 
 ### Environment variables
 
-All sensitive data like fx passwords and usernames, we dont want to add to git! This problem we solve by having environment variables. Environment variables are not committed to git and have a key value structure.
+All sensitive data like fx passwords and usernames, we don't want to add to git! This problem we solve by having environment variables. Environment variables are not committed to git and have a key value structure.
 
-Remember to copy the `.env.example` file, and rename the copied file to `.env`. In the `.env` file add the relevant host, database name, database user and pasword to your own local database. If you are unsure of these things then select your database in the Mysql Workbench. Now press `Database` -> `Manage Connections...`. Here you can see everything you need except the password. If you forgot that, reset it.
+Remember to copy the `.env.example` file, and rename the copied file to `.env`. In the `.env` file add the relevant host, database name, database user and password to your own local database. If you are unsure of these things then select your database in the Mysql Workbench. Now press `Database` -> `Manage Connections...`. Here you can see everything you need except the password. If you forgot that, reset it.
 
 ### Prerequisites
 
