@@ -29,41 +29,51 @@ app.get("/future-meals", async (req, res) => {
   const [rows] = await knex.raw(
     "SELECT * FROM meal WHERE meal.time>DATE(NOW());"
   );
-  rows.length !== 0
-    ? res.json(rows)
-    : res.status(200).send("there are no meals in the future");
+  if (rows.length !== 0) {
+    res.json(rows);
+  } else {
+    res.status(200).send("there are no meals in the future");
+  }
 });
 //Respond with all meals in the past (relative to the when datetime)
 app.get("/past-meals", async (req, res) => {
   const [rows] = await knex.raw(
     "SELECT * FROM meal WHERE meal.time< DATE(NOW());"
   );
-  rows.length !== 0
-    ? res.json(rows)
-    : res.status(200).send("there are no meals in the past");
+  if (rows.length !== 0) {
+    res.json(rows);
+  } else {
+    res.status(200).send("there are no meals in the past");
+  }
 });
 // Respond with all meals sorted by ID
 app.get("/all-meals", async (req, res) => {
   const [rows] = await knex.raw("SELECT * FROM meal ORDER BY mealID;");
-  rows.length !== 0
-    ? res.json(rows)
-    : res.status(200).send("there are no meals");
+  if (rows.length !== 0) {
+    res.json(rows);
+  } else {
+    res.status(200).send("there are no meals");
+  }
 });
 // Respond with the first meal (meaning with the minimum id)
 app.get("/first-meal", async (req, res) => {
   const [rows] = await knex.raw("SELECT * FROM meal LIMIT 1;");
-  rows.length !== 0
-    ? res.json(rows)
-    : res.status(404).send("there doesn't exist first meal");
+  if (rows.length !== 0) {
+    res.json(rows);
+  } else {
+    res.status(200).send("there doesn't exist first meal");
+  }
 });
 // Respond with the last meal (meaning with the maximum id)
 app.get("/last-meal", async (req, res) => {
   const [rows] = await knex.raw(
     "SELECT * FROM meal ORDER BY mealID DESC LIMIT 1;"
   );
-  rows.length !== 0
-    ? res.json(rows)
-    : res.status(404).send("there doesn't exist last meal");
+  if (rows.length !== 0) {
+    res.json(rows);
+  } else {
+    res.status(200).send("there doesn't exist last meal");
+  }
 });
 
 if (process.env.API_PATH) {
