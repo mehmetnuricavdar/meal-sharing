@@ -29,9 +29,14 @@ router.get("/:id", async (req, res) => {
 
 // CREATE a new meal
 router.post("/", async (req, res) => {
+  console.log(" price", req.params, {
+    title,
+    description,
+    price,
+  });
   try {
-    const { name, description, price } = req.body;
-    const newMeal = await knex("meals").insert({ name, description, price });
+    const data = req.body;
+    const newMeal = await knex("meals").insert(data);
     res.status(201).json(newMeal);
   } catch (error) {
     console.error(error.message);
@@ -42,10 +47,10 @@ router.post("/", async (req, res) => {
 // UPDATE a meal by id
 router.put("/:id", async (req, res) => {
   try {
-    const { name, description, price } = req.body;
+    const { title, description, price } = req.body;
     const updatedMeal = await knex("meals")
       .where({ id: req.params.id })
-      .update({ name, description, price });
+      .update({ title, description, price });
     if (!updatedMeal) {
       return res.status(404).json({ message: "Meal not found" });
     }

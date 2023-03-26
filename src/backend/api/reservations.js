@@ -33,18 +33,40 @@ router.get("/:id", async (req, res) => {
 // CREATE a new reservation
 router.post("/", async (req, res) => {
   try {
-    const { name, email, meal_id, created_date } = req.body;
-    if (!name || !email || !meal_id || !created_date) {
-      res
-        .status(400)
-        .json({
-          message: "Name, email, meal_id, and created_date are required",
-        });
-      return;
-    }
-    const reservation = await knex("reservations")
-      .insert({ name, email, meal_id, created_date })
-      .returning("*");
+    const {
+      contactName,
+      contactEmail,
+      mealID,
+      createdDate,
+      contactPhoneNumber,
+      numberOfGuests,
+    } = req.body;
+    console.log(
+      "hello",
+      contactName,
+      contactEmail,
+      mealID,
+      createdDate,
+      numberOfGuests,
+      contactPhoneNumber
+    );
+    // if (!name || !email || !meal_id || !created_date) {
+    //   res.status(400).json({
+    //     message: `${!name && "Name"}, ${!email ? "email" : null}, ${
+    //       !meal_id && "could not find the meal ID"
+    //     } "and" ${!created_date && "date"} + " required")`,
+    //   });
+    //   return;
+    // }
+    const reservation = await knex("reservations").insert({
+      contactName,
+      contactEmail,
+      mealID,
+      createdDate,
+      numberOfGuests,
+      contactPhoneNumber,
+    });
+    // .returning("*");
     res.status(201).json(reservation);
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -54,18 +76,22 @@ router.post("/", async (req, res) => {
 // UPDATE a reservation by id
 router.put("/:id", async (req, res) => {
   try {
-    const { name, email, meal_id, created_date } = req.body;
-    if (!name || !email || !meal_id || !created_date) {
-      res
-        .status(400)
-        .json({
-          message: "Name, email, meal_id, and created_date are required",
-        });
+    const { contactName, contactEmail, mealID, createdDate } = req.body;
+    if (!contactName || !contactEmail || !mealID || !createdDate) {
+      res.status(400).json({
+        message: "Name, email, meal_id, and created_date are required",
+      });
       return;
     }
     const reservation = await knex("reservations")
       .where("id", req.params.id)
-      .update({ name, email, meal_id, created_date })
+      .update({
+        contactName,
+        contactEmail,
+        mealID,
+        createdDate,
+        numberOfGuests,
+      })
       .returning("*");
     if (!reservation) {
       res.status(404).json({ message: "Reservation not found" });
