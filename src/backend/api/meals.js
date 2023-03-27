@@ -29,13 +29,9 @@ router.get("/:id", async (req, res) => {
 
 // CREATE a new meal
 router.post("/", async (req, res) => {
-  console.log(" price", req.params, {
-    title,
-    description,
-    price,
-  });
+  const { title, description, price } = req.body;
+  const data = { title, description, price };
   try {
-    const data = req.body;
     const newMeal = await knex("meals").insert(data);
     res.status(201).json(newMeal);
   } catch (error) {
