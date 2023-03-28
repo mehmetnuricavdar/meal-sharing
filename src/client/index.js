@@ -1,15 +1,19 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import "./index.css";
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import App from "./App";
-import * as serviceWorker from "./serviceWorker";
-import { BrowserRouter as Router } from "react-router-dom";
+import Meal from "./components/Meal";
+import MealsList from "./components/MealsList";
 
 ReactDOM.render(
-  <Router>
-    <App />
-  </Router>,
+  <React.StrictMode>
+    <Router>
+      <Switch>
+        <Route exact path="/" component={App} />
+        <Route exact path="/meals" component={MealsList} />
+        <Route exact path="/meals/:id" component={Meal} />
+      </Switch>
+    </Router>
+  </React.StrictMode>,
   document.getElementById("root")
 );
-
-serviceWorker.unregister();
