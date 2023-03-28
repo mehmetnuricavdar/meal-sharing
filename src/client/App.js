@@ -1,21 +1,18 @@
 import React from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
-import Home from "./components/TestComponent/Home";
-import TestComponent from "./components/TestComponent/TestComponent";
+import "./App.css";
+import MealsList from "./MealsList";
 
 function App() {
   return (
-    <Router>
-      <Route exact path="/">
-        <Home />
-      </Route>
-      <Route exact path="/lol">
-        <p>lol</p>
-      </Route>
-      <Route exact path="/test-component">
-        <TestComponent></TestComponent>
-      </Route>
-    </Router>
+    <div className="App">
+      <header className="App-header">
+        <h1>Meals App</h1>
+      </header>
+      <main>
+        <MealsList />
+      </main>
+    </div>
   );
 }
 
