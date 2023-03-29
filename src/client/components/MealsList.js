@@ -16,22 +16,22 @@ function MealsList() {
   }, []);
 
   return (
-    <div>
+    <>
       <h1>All Meals</h1>
-      <div className="meals-grid">
-        {meals.map((meal) => (
-          <div className="meal-card" key={meal.mealID}>
-            <Meal key={meal.mealID} meal={meal} />
-            <Link to={`/meals/${meal.mealID}`}>
-              <h3>{meal.title}</h3>
-              <p>{meal.description}</p>
-              <p>{meal.price}</p>
-            </Link>
-          </div>
-        ))}
-      </div>
-      <footer>Footer</footer>
-    </div>
+
+      {meals.map((meal) => (
+        <div className="meal-card" key={meal.mealID}>
+          <Link to={`/meals/${meal.mealID}`}>
+            <h3>{meal.title}</h3>
+            <p>{meal.description}</p>
+            <p>{meal.price} DKK</p>
+          </Link>
+          <Meal key={meal.mealID} meal={meal} />
+        </div>
+      ))}
+
+      <footer>Hack Your Future Denmark MealSharing App HomeWork</footer>
+    </>
   );
 }
 

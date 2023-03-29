@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import "./App.css"
 
 function App() {
   const [meals, setMeals] = useState([]);
@@ -15,9 +16,9 @@ function App() {
   }, []);
 
   return (
-    <div>
-      <h1>Page Title</h1>
-      <p>Subtitle</p>
+    <>
+      <h1>MealSharing App</h1>
+      <p>This project is for HYF Denmark</p>
       <div>
         {meals.slice(0, 3).map((meal) => (
           <div key={meal.mealID}>
@@ -29,7 +30,7 @@ function App() {
       </div>
       <Link to="/meals">See more</Link>
       <footer>Footer</footer>
-    </div>
+    </>
   );
 }
 
