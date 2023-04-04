@@ -1,36 +1,57 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import Meal from "./Meal";
 
 function MealsList() {
   const [meals, setMeals] = useState([]);
+  const [searchTitle, setSearchTitle] = useState("");
+  const [displayedMeals, setDisplayedMeals] = useState([]);
 
   useEffect(() => {
     const fetchMeals = async () => {
-      const res = await fetch("/api/meals");
-      const data = await res.json();
-      setMeals(data);
-    };
+      try {
+        const res = await fetch("/api/meals");
+        const data = await res.json();
 
+        setMeals(data || []);
+      } catch (error) {
+        console.log(error);
+      }
+    };
     fetchMeals();
   }, []);
 
+  const handleTitleChange = (event) => {
+    const value = event.target.value;
+    setSearchTitle(value);
+    console.log("searchTitle:", value);
+
+    const filteredMeals = meals.filter((meal) => {
+      const title = meal.title.toLowerCase();
+      const search = value.toLowerCase();
+      console.log("title:", title, "search:", search);
+      return title.includes(search);
+    });
+    console.log("filteredMeals:", filteredMeals);
+    setDisplayedMeals(filteredMeals);
+  };
   return (
     <>
-      <h1>All Meals</h1>
-
-      {meals.map((meal) => (
-        <div className="meal-card" key={meal.mealID}>
-          <Link to={`/meals/${meal.mealID}`}>
+      <input
+        type="text"
+        placeholder="Search by title"
+        value={searchTitle}
+        onChange={handleTitleChange}
+      />
+      <div className="meals-container">
+        {displayedMeals.map((meal) => (
+          <div key={meal.id} className="meal-card">
             <h3>{meal.title}</h3>
             <p>{meal.description}</p>
-            <p>{meal.price} DKK</p>
-          </Link>
-          <Meal key={meal.mealID} meal={meal} />
-        </div>
-      ))}
-
-      <footer>Hack Your Future Denmark MealSharing App HomeWork</footer>
+            <p>{meal.price}</p>
+            <Link to={`/meal/${meal.id}`}>View Details</Link>
+          </div>
+        ))}
+      </div>
     </>
   );
 }

@@ -3,55 +3,60 @@ import { useParams } from "react-router-dom";
 
 const Meal = () => {
   const [meal, setMeal] = useState({});
+  const [searchTitle, setSearchTitle] = useState("");
   const [reservation, setReservation] = useState({});
-  const [isAvailable, setIsAvailable] = useState(false);
-  const { mealID } = useParams();
+  const [availableSpots, setAvailableSpots] = useState(0);
   const [review, setReview] = useState({ name: "", rating: "", comment: "" });
+  const { mealID } = useParams();
 
   useEffect(() => {
     const getMeal = async () => {
-      const response = await fetch(`/api/meals/${mealID}`);
+      const response = await fetch(`/api/meals/${searchTitle}`);
       const data = await response.json();
       setMeal(data);
-      setIsAvailable(data.available_reservations > 0);
+      setAvailableSpots(data.available_reservations);
     };
     getMeal();
   }, [mealID]);
 
-  const handleChange = (event) => {
-    const { name, value } = event.target;
-    setReservation({ ...reservation, [name]: value });
+  const handleSearch = (event) => {
+    setSearchTitle(event.target.value);
   };
 
-  const handleSubmit = async (event) => {
+  const handleReservation = async (event) => {
     event.preventDefault();
-    const response = await fetch("/api/reservations", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        ...reservation,
-        id: meal.id,
-      }),
-    });
 
-    if (response.ok) {
-      alert("Reservation created successfully!");
-      setReservation({});
-      setIsAvailable(meal.available_reservations - 1 > 0);
-      setMeal({
-        ...meal,
-        available_reservations: meal.available_reservations - 1,
+    if (availableSpots > 0) {
+      const response = await fetch("/api/reservations", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...reservation,
+          mealId: meal.id,
+        }),
       });
+
+      if (response.ok) {
+        alert("Reservation created successfully!");
+        setReservation({});
+        setAvailableSpots(availableSpots - 1);
+        setMeal({
+          ...meal,
+          available_reservations: meal.available_reservations - 1,
+        });
+      } else {
+        alert("Error creating reservation.");
+      }
     } else {
-      alert("Error creating reservation.");
+      alert("No available spots for this meal.");
     }
   };
 
   const handleReviewSubmit = async (event) => {
     event.preventDefault();
-    const response = await fetch("/api/review", {
+    const response = await fetch("/api/reviews", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -69,34 +74,44 @@ const Meal = () => {
 
   return (
     <>
-      {isAvailable ? (
-        <form onSubmit={handleSubmit}>
-          <label htmlFor="name">Name:</label>
-          <input
-            type="text"
-            name="name"
-            value={reservation.name || ""}
-            onChange={handleChange}
-          />
-          <label htmlFor="email">Email:</label>
-          <input
-            type="email"
-            name="email"
-            value={reservation.email || ""}
-            onChange={handleChange}
-          />
-          <label htmlFor="phone">Phone:</label>
-          <input
-            type="tel"
-            name="phone"
-            value={reservation.phone || ""}
-            onChange={handleChange}
-          />
-          <button type="submit">Book seat</button>
-        </form>
-      ) : (
-        <p>No available reservations for this meal.</p>
-      )}
+      <div>
+        <h2>Hello{meal.title}</h2>
+        <p>Price: {meal.price}</p>
+        <p>Max Reservations: {meal.maxReservations}</p>
+        <p>Available Reservations: {availableSpots}</p>
+      </div>
+
+      <form onSubmit={handleReservation}>
+        <label htmlFor="name">Name:</label>
+        <input
+          type="text"
+          name="name"
+          value={reservation.name || ""}
+          onChange={(e) =>
+            setReservation({ ...reservation, name: e.target.value })
+          }
+        />
+        <label htmlFor="email">Email:</label>
+        <input
+          type="email"
+          name="email"
+          value={reservation.email || ""}
+          onChange={(e) =>
+            setReservation({ ...reservation, email: e.target.value })
+          }
+        />
+        <label htmlFor="phone">Phone:</label>
+        <input
+          type="tel"
+          name="phone"
+          value={reservation.phone || ""}
+          onChange={(e) =>
+            setReservation({ ...reservation, phone: e.target.value })
+          }
+        />
+        <button type="submit">Book seat</button>
+      </form>
+
       <form onSubmit={handleReviewSubmit}>
         <h3>Leave a Review</h3>
         <label>
