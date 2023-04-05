@@ -1,7 +1,7 @@
 import React from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import "./App.css";
-import MealsList from "./MealsList";
+import MealsList from "./components/MealsList";
 
 function App() {
   return (
@@ -17,3 +17,4 @@ function App() {
 }
 
 export default App;
+
