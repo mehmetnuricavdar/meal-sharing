@@ -6,20 +6,25 @@ const MealsList = () => {
 
   useEffect(() => {
     async function fetchData() {
+
       const response = await fetch("/api/meals");
       const data = await response.json();
       setMeals(data);
     }
-    fetchData();
+    fetchMeals();
   }, []);
 
   return (
-    <div className="meals-list">
+    <div>
       {meals.map((meal) => (
-        <Meal key={meal.id} meal={meal} />
+        <div key={meal.id}>
+          <h3>{meal.title}</h3>
+          <p>{meal.description}</p>
+          <p>Price: ${meal.price}</p>
+        </div>
       ))}
     </div>
   );
-};
+}
 
 export default MealsList;
