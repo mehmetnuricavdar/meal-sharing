@@ -1,27 +1,55 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
+import Reviews from "./Reviews";
 
 const Meal = () => {
-  const [meal, setMeal] = useState({});
-  const [searchTitle, setSearchTitle] = useState("");
+  const [meals, setMeal] = useState({});
   const [reservation, setReservation] = useState({});
   const [availableSpots, setAvailableSpots] = useState(0);
   const [review, setReview] = useState({ name: "", rating: "", comment: "" });
   const { mealID } = useParams();
+  const [displayedMeals, setDisplayedMeals] = useState([]);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    const getMeal = async () => {
-      const response = await fetch(`/api/meals/${searchTitle}`);
-      const data = await response.json();
-      setMeal(data);
-      setAvailableSpots(data.available_reservations);
+    const fetchMeals = async () => {
+      try {
+        const response = await fetch(`./api/meals/${mealID}`);
+        if (!response.ok) {
+          throw new Error("Meal not found");
+        }
+        const data = await response.json();
+        console.log(mealID);
+        setMeal(data);
+        setAvailableSpots(data.available_reservations);
+      } catch (error) {
+        console.error(error);
+        setError(error.message);
+      }
     };
-    getMeal();
+    fetchMeals();
   }, [mealID]);
 
-  const handleSearch = (event) => {
-    setSearchTitle(event.target.value);
-  };
+  useEffect(() => {
+    if (meals.mealID) {
+      setDisplayedMeals([meals]);
+    }
+  }, [meals]);
+  console.log(displayedMeals);
+
+  useEffect(() => {
+    const fetchReview = async () => {
+      try {
+        const response = await fetch(`./api/reviews/${mealID}`);
+        if (!response.ok) {
+          throw new Error("Review not found");
+        }
+      } catch (error) {
+        console.error(error);
+        setError(error.message);
+      }
+    };fetchReview()
+  }, [mealID]);
 
   const handleReservation = async (event) => {
     event.preventDefault();
@@ -34,7 +62,7 @@ const Meal = () => {
         },
         body: JSON.stringify({
           ...reservation,
-          mealId: meal.id,
+          mealID: meals.mealID,
         }),
       });
 
@@ -43,8 +71,8 @@ const Meal = () => {
         setReservation({});
         setAvailableSpots(availableSpots - 1);
         setMeal({
-          ...meal,
-          available_reservations: meal.available_reservations - 1,
+          ...meals,
+          available_reservations: meals.available_reservations - 1,
         });
       } else {
         alert("Error creating reservation.");
@@ -56,7 +84,7 @@ const Meal = () => {
 
   const handleReviewSubmit = async (event) => {
     event.preventDefault();
-    const response = await fetch("/api/reviews", {
+    const response = await fetch(`/api/reviews/${mealID}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -74,77 +102,84 @@ const Meal = () => {
 
   return (
     <>
-      <div>
-        <h2>Hello{meal.title}</h2>
-        <p>Price: {meal.price}</p>
-        <p>Max Reservations: {meal.maxReservations}</p>
-        <p>Available Reservations: {availableSpots}</p>
-      </div>
+      {error ? (
+        <div>{error}</div>
+      ) : (
+        <div>
+          {displayedMeals.map((meal) => (
+            <div key={meal.mealID} className="meal-card">
+              <h2>{meal.title}</h2>
+              <p>Price: {meal.price} EUR</p>
+              <p>Max Reservations: {meal.max_reservations}</p>
+              <p>Available Reservations: {availableSpots}</p>
+            </div>
+          ))}
+          <Reviews />
+          <form onSubmit={handleReservation}>
+            <h3>Make a reservation</h3>
 
-      <form onSubmit={handleReservation}>
-        <label htmlFor="name">Name:</label>
-        <input
-          type="text"
-          name="name"
-          value={reservation.name || ""}
-          onChange={(e) =>
-            setReservation({ ...reservation, name: e.target.value })
-          }
-        />
-        <label htmlFor="email">Email:</label>
-        <input
-          type="email"
-          name="email"
-          value={reservation.email || ""}
-          onChange={(e) =>
-            setReservation({ ...reservation, email: e.target.value })
-          }
-        />
-        <label htmlFor="phone">Phone:</label>
-        <input
-          type="tel"
-          name="phone"
-          value={reservation.phone || ""}
-          onChange={(e) =>
-            setReservation({ ...reservation, phone: e.target.value })
-          }
-        />
-        <button type="submit">Book seat</button>
-      </form>
+            <label htmlFor="name">Name:</label>
+            <input
+              type="text"
+              name="name"
+              value={reservation.name || ""}
+              onChange={(e) =>
+                setReservation({ ...reservation, name: e.target.value })
+              }
+            />
+            <label htmlFor="email">Email:</label>
+            <input
+              type="email"
+              name="email"
+              value={reservation.email || ""}
+              onChange={(e) =>
+                setReservation({ ...reservation, email: e.target.value })
+              }
+            />
+            <label htmlFor="phone">Phone:</label>
+            <input
+              type="tel"
+              name="phone"
+              value={reservation.phone || ""}
+              onChange={(e) =>
+                setReservation({ ...reservation, phone: e.target.value })
+              }
+            />
+            <button type="submit">Book seat</button>
+          </form>
+          <form onSubmit={handleReviewSubmit}>
+            <h3>Leave a Review</h3>
+            <label>Name:</label>
+            <input
+              type="text"
+              value={review.name}
+              onChange={(e) => setReview({ ...review, name: e.target.value })}
+              required
+            />
 
-      <form onSubmit={handleReviewSubmit}>
-        <h3>Leave a Review</h3>
-        <label>
-          Name:
-          <input
-            type="text"
-            value={review.name}
-            onChange={(e) => setReview({ ...review, name: e.target.value })}
-            required
-          />
-        </label>
-        <br />
-        <label>
-          Rating:
-          <input
-            type="number"
-            value={review.rating}
-            onChange={(e) => setReview({ ...review, rating: e.target.value })}
-            required
-          />
-        </label>
-        <br />
-        <label>
-          Comment:
-          <textarea
-            value={review.comment}
-            onChange={(e) => setReview({ ...review, comment: e.target.value })}
-            required
-          />
-        </label>
-        <br />
-        <button type="submit">Submit Review</button>
-      </form>
+            <label>Rating: </label>
+
+            <input
+              type="number"
+              value={review.rating}
+              onChange={(e) => setReview({ ...review, rating: e.target.value })}
+              required
+            />
+            <label>Comment: </label>
+            <textarea
+              value={review.comment}
+              onChange={(e) =>
+                setReview({ ...review, comment: e.target.value })
+              }
+              required
+            />
+            <button type="submit">Submit Review</button>
+          </form>
+        </div>
+      )}
+
+      <Link to="/meals">Back to Meals</Link>
+      <footer>This is a HackYourFuture Denmark project</footer>
     </>
   );
 };

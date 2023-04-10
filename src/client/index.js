@@ -11,7 +11,7 @@ ReactDOM.render(
       <Switch>
         <Route exact path="/" component={App} />
         <Route exact path="/meals" component={MealsList} />
-        <Route exact path="/meals/:id" component={Meal} />
+        <Route exact path="/meals/:mealID" component={Meal} />
       </Switch>
     </Router>
   </React.StrictMode>,

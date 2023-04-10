@@ -19,16 +19,19 @@ function MealsList() {
     };
     fetchMeals();
   }, []);
+  useEffect(() => {
+    setDisplayedMeals(meals);
+  }, [meals]);
 
   const handleTitleChange = (event) => {
     const value = event.target.value;
+    console.log(value);
     setSearchTitle(value);
     console.log("searchTitle:", value);
 
     const filteredMeals = meals.filter((meal) => {
       const title = meal.title.toLowerCase();
       const search = value.toLowerCase();
-      console.log("title:", title, "search:", search);
       return title.includes(search);
     });
     console.log("filteredMeals:", filteredMeals);
@@ -44,14 +47,15 @@ function MealsList() {
       />
       <div className="meals-container">
         {displayedMeals.map((meal) => (
-          <div key={meal.id} className="meal-card">
+          <div key={meal.mealID} className="meal-card">
             <h3>{meal.title}</h3>
             <p>{meal.description}</p>
-            <p>{meal.price}</p>
-            <Link to={`/meal/${meal.id}`}>View Details</Link>
+            <p>{meal.price} EUR</p>
+            <Link to={`/meals/${meal.mealID}`}>View Details</Link>
           </div>
         ))}
       </div>
+      <footer>This is a HackYourFuture Denmark project</footer>
     </>
   );
 }
