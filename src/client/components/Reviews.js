@@ -28,11 +28,12 @@ function Reviews() {
         <div key={review.reviewID}>
           <p>{review.comment}</p>
           <p>{review.reviewer_name}</p>
-          <p>Rating: {review.rating} ⭐️</p>
+          <p>Rating: {`${"⭐️".repeat(review.rating)}`}</p>
         </div>
       ))}
     </div>
   );
+
 }
 
 export default Reviews;

@@ -178,7 +178,7 @@ const Meal = () => {
         </div>
       )}
 
-      <Link to="/meals">Back to Meals</Link>
+      <Link className="links" to="/meals">Back to Meals</Link>
       <footer>This is a HackYourFuture Denmark project</footer>
     </>
   );

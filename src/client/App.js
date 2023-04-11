@@ -9,8 +9,9 @@ function App() {
 
   useEffect(() => {
     const fetchMeals = async () => {
-      const res = await fetch("/meals");
+      const res = await fetch("./api/meals");
       const data = await res.json();
+      console.log(data)
       setMeals(data);
     };
 
@@ -21,15 +22,17 @@ function App() {
     setSearchTitle(event.target.value);
   };
 
-  const filteredMeals = meals.filter((meal) =>
-    meal.title.toLowerCase().includes(searchTitle.toLowerCase())
+  const filteredMeals = meals.filter(
+    (meal) =>
+      meal.title.toLowerCase().includes(searchTitle.toLowerCase()) ||
+      meal.description.toLowerCase().includes(searchTitle.toLowerCase())
   );
 
   return (
-    <div>
+    <div className="homepage-container">
       <h1>MealSharing App</h1>
       <p>This project is for HYF Denmark</p>
-      <div>
+      <div className="homepage-mealCard">
         <input
           type="text"
           placeholder="Search by title"
@@ -44,7 +47,7 @@ function App() {
           </div>
         ))}
       </div>
-      <Link to="/meals">See more</Link>
+      <Link className="links" to="/meals">See more</Link>
       <footer>This is a HackYourFuture Denmark project</footer>
     </div>
   );
