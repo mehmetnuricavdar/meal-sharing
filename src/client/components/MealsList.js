@@ -4,15 +4,13 @@ import Meal from "./Meal";
 
 function MealsList() {
   const [meals, setMeals] = useState([]);
-
   useEffect(() => {
     const fetchMeals = async () => {
       const res = await fetch("/api/meals");
       const data = await res.json();
       setMeals(data);
     };
-
-    fetchMeals();
+   fetchMeals();
   }, []);
 
   return (

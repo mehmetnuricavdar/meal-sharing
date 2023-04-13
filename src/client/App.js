@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import "./App.css"
 
+
 function App() {
   const [meals, setMeals] = useState([]);
 
@@ -31,7 +32,9 @@ function App() {
       <Link to="/meals">See more</Link>
       <footer>Footer</footer>
     </>
+
   );
 }
 
 export default App;
+
