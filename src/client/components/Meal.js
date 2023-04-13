@@ -1,135 +1,68 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
+import Reviews from "./Reviews";
+import Reservations from "./Reservations";
 
 const Meal = () => {
-  const [meal, setMeal] = useState({});
-  const [reservation, setReservation] = useState({});
-  const [isAvailable, setIsAvailable] = useState(false);
+  const [meals, setMeal] = useState({});
+  const [availableSpots, setAvailableSpots] = useState(0);
   const { mealID } = useParams();
-  const [review, setReview] = useState({ name: "", rating: "", comment: "" });
+  const [displayedMeals, setDisplayedMeals] = useState([]);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    const getMeal = async () => {
-      const response = await fetch(`/api/meals/${mealID}`);
-      const data = await response.json();
-      setMeal(data);
-      setIsAvailable(data.available_reservations > 0);
+    const fetchMeals = async () => {
+      try {
+        const response = await fetch(`./api/meals/${mealID}`);
+        if (!response.ok) {
+          throw new Error("Meal not found");
+        }
+        const data = await response.json();
+        setMeal(data);
+        setAvailableSpots(
+          (prevAvailableSpots) => prevAvailableSpots - data.guest_count
+        );
+      } catch (error) {
+        console.error(error);
+        setError(error.message);
+      }
     };
-    getMeal();
+    fetchMeals();
   }, [mealID]);
 
-  const handleChange = (event) => {
-    const { name, value } = event.target;
-    setReservation({ ...reservation, [name]: value });
-  };
-
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    const response = await fetch("/api/reservations", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        ...reservation,
-        id: meal.id,
-      }),
-    });
-
-    if (response.ok) {
-      alert("Reservation created successfully!");
-      setReservation({});
-      setIsAvailable(meal.available_reservations - 1 > 0);
-      setMeal({
-        ...meal,
-        available_reservations: meal.available_reservations - 1,
-      });
-    } else {
-      alert("Error creating reservation.");
+  useEffect(() => {
+    if (meals.mealID) {
+      setDisplayedMeals([meals]);
     }
-  };
+  }, [meals]);
 
-  const handleReviewSubmit = async (event) => {
-    event.preventDefault();
-    const response = await fetch("/api/review", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(review),
-    });
-
-    if (response.ok) {
-      alert("Review created successfully!");
-      setReview({ name: "", rating: "", comment: "" });
-    } else {
-      alert("Error creating review.");
-    }
-  };
+  const encodedTitle = encodeURIComponent(meals.title);
+  const imageUrl = `https://source.unsplash.com/150x200/?${encodedTitle}`;
 
   return (
     <>
-      {isAvailable ? (
-        <form onSubmit={handleSubmit}>
-          <label htmlFor="name">Name:</label>
-          <input
-            type="text"
-            name="name"
-            value={reservation.name || ""}
-            onChange={handleChange}
-          />
-          <label htmlFor="email">Email:</label>
-          <input
-            type="email"
-            name="email"
-            value={reservation.email || ""}
-            onChange={handleChange}
-          />
-          <label htmlFor="phone">Phone:</label>
-          <input
-            type="tel"
-            name="phone"
-            value={reservation.phone || ""}
-            onChange={handleChange}
-          />
-          <button type="submit">Book seat</button>
-        </form>
+      {error ? (
+        <div>{error}</div>
       ) : (
-        <p>No available reservations for this meal.</p>
+        <div className="meal-container">
+          {displayedMeals.map((meal) => (
+            <div key={meal.mealID} className="meal-card">
+              <img src={imageUrl} alt={meal.title} className="meal-image" />
+              <h2>{meal.title}</h2>
+              <p>Price: {meal.price} EUR</p>
+              <p>Max Reservations: {meal.max_reservations}</p>
+              <p>Available Reservations: {availableSpots}</p>
+            </div>
+          ))}
+          <Reviews />
+          <Reservations />
+        </div>
       )}
-      <form onSubmit={handleReviewSubmit}>
-        <h3>Leave a Review</h3>
-        <label>
-          Name:
-          <input
-            type="text"
-            value={review.name}
-            onChange={(e) => setReview({ ...review, name: e.target.value })}
-            required
-          />
-        </label>
-        <br />
-        <label>
-          Rating:
-          <input
-            type="number"
-            value={review.rating}
-            onChange={(e) => setReview({ ...review, rating: e.target.value })}
-            required
-          />
-        </label>
-        <br />
-        <label>
-          Comment:
-          <textarea
-            value={review.comment}
-            onChange={(e) => setReview({ ...review, comment: e.target.value })}
-            required
-          />
-        </label>
-        <br />
-        <button type="submit">Submit Review</button>
-      </form>
+
+      <Link className="links" to="/meals">
+        Back to Meals
+      </Link>
+      <footer>This is a HackYourFuture Denmark project</footer>
     </>
   );
 };

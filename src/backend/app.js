@@ -2,6 +2,7 @@ const express = require("express");
 const app = express();
 const router = express.Router();
 const path = require("path");
+const reviewsRouter = require("./api/reviews");
 
 const mealsRouter = require("./api/meals");
 const reservationRouter = require("./api/reservations");
@@ -23,8 +24,7 @@ app.use(cors());
 
 router.use("/meals", mealsRouter);
 router.use("/reservations", reservationRouter);
-router.use("/reviews", reviewsRouter)
-
+router.use("/reviews", reviewsRouter);
 
 app.listen(port, () => {
   console.log(`Listening on port ${port}`);
