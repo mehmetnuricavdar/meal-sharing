@@ -82,11 +82,7 @@ router.get("/", async (req, res) => {
 // GET a meal by id
 router.get("/:id", async (req, res) => {
   try {
-    const meal = await knex
-      .select()
-      .from("meals")
-      .where("id", req.params.id)
-      .first();
+    const meal = await knex("meals").where({ mealID: req.params.id }).first();
     if (!meal) {
       res.status(404).json({ message: "Meal not found" });
       return;
@@ -159,10 +155,11 @@ router.put("/:id", async (req, res) => {
 // DELETE a meal by id
 router.delete("/:id", async (req, res) => {
   try {
-    const meal = await knex("meals").where("id", req.params.id).del();
-    if (!meal) {
-      res.status(404).json({ message: "Meal not found" });
-      return;
+    const deletedMeal = await knex("meals")
+      .where({ mealID: req.params.id })
+      .del();
+    if (!deletedMeal) {
+      return res.status(404).json({ message: "Meal not found" });
     }
     res.json({ message: "Meal deleted" });
   } catch (err) {

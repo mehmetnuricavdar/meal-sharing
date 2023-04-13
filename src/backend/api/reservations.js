@@ -42,7 +42,7 @@ router.post("/", async (req, res) => {
 
     if (!contactName || !contactEmail || !mealID || !createdDate) {
       return res.status(400).json({
-        message: "Name, email, meal_id, and created_date are required",
+        message: "Name, email, mealID, and created_date are required",
       });
     }
 
