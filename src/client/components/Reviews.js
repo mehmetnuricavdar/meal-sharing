@@ -64,6 +64,8 @@ function Reviews() {
 
         <input
           type="number"
+          min={1}
+          max={5}
           value={review.rating}
           onChange={(e) => setReview({ ...review, rating: e.target.value })}
           required
