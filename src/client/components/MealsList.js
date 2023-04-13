@@ -12,7 +12,6 @@ function MealsList() {
       try {
         const res = await fetch("/api/meals");
         const data = await res.json();
-
         setMeals(data || []);
       } catch (error) {
         console.log(error);
